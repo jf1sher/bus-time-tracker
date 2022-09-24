@@ -21,7 +21,7 @@ route_name = "923"
 
 def update_backend():
     next_bus_time, actual_bus_time = backend.get_next_bus()
-    bus_stop_name = backend.get_stop_word_name("3907")
+    bus_stop_name = backend.get_stop_word_name("7001")
     return next_bus_time, actual_bus_time,  bus_stop_name
 
 logging.basicConfig(level=logging.DEBUG)

@@ -20,8 +20,8 @@ import config #Contains API Key
 subscription_key = config.subscription_key
 
 #Query Paramaters
-stop_name = "3907" #Source from https://at.govt.nz/bus-train-ferry/timetables/find-my-stop-or-station-on-a-map/
-#stop_name = "7001"
+#stop_name = "3907" #Source from https://at.govt.nz/bus-train-ferry/timetables/find-my-stop-or-station-on-a-map/
+stop_name = "7001"
 route_name = "923" 
 
 #Request Headers
