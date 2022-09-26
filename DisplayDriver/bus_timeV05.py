@@ -11,11 +11,21 @@ import logging
 from waveshare_epd import epd1in54b_V2
 import time
 from PIL import Image,ImageDraw,ImageFont
-import traceback
+import traceback    
+
+#Backend connection
+sys.path.insert(0, '/home/littlefish/Desktop/bus-time-tracker/AT-tracker')
+import backend
+
+route_name = "923"
+
+def update_backend():
+    next_bus_time, actual_bus_time = backend.get_next_bus()
+    bus_stop_name = backend.get_stop_word_name("3907")
+    return next_bus_time, actual_bus_time,  bus_stop_name
 
 logging.basicConfig(level=logging.DEBUG)
 
-next_update = 30
 epd = epd1in54b_V2.EPD()
 logging.info("init and Clear")
 epd.init()
@@ -30,7 +40,11 @@ redimage = Image.new('1', (epd.width, epd.height), 255)
 
 
 try:
-    while next_update >= 0:
+    while True:
+        next_bus_time, actual_bus_time, bus_stop_name = update_backend()
+        if next_bus_time == "no more buses today" or next_bus_time == "":
+            print("No more buses today")
+            break
         blackimage = Image.new('1', (epd.width, epd.height), 255)
         redimage = Image.new('1', (epd.width, epd.height), 255)
         # Drawing on the image
@@ -40,22 +54,19 @@ try:
         drawred = ImageDraw.Draw(redimage)
 
         drawblack.rectangle((0, 10, 200, 34), fill = 255)
-        drawblack.text((8, 10), 'rainbow frends on roblox', font = font18, fill = 0)
-      #  drawblack.text((8, 30), 'Route: 923', font = font18, fill = 0)
-       # drawblack.text((8, 50), 'Stop:2332', font = font18, fill = 0)
-        #drawblack.text((8, 100), 'Next Bus:', font = font18, fill = 0)
-        #drawblack.text((8, 120), 'Leave at 12:30pm', font = font18, fill = 0)
-        #drawblack.text((8, 160), 'Next Update in ' + str(next_update) + 's', font = font18, fill = 0)
-        time.sleep(5)
-        next_update -= 5
+        drawblack.text((8, 30), 'Route: ' + route_name, font = font18, fill = 0)
+        drawblack.text((8, 50), 'Stop: ' + bus_stop_name, font = font18, fill = 0)
+        drawblack.text((8, 100), 'Live arrival: ' + actual_bus_time, font = font18, fill = 0)
+        drawblack.text((8, 120), 'Sch arrival: ' + next_bus_time, font = font18, fill = 0)
+        drawblack.text((8, 160), 'Next Update in 60s', font = font18, fill = 0)
+        
 
         blackimage = blackimage.transpose(Image.ROTATE_90) 
         redimage = redimage.transpose(Image.ROTATE_90)
         
         epd.display(epd.getbuffer(blackimage),epd.getbuffer(redimage))
-    
-    #logging.info("Goto Sleep...")
-    #epd.sleep()
+        time.sleep(60)
+        #epd.sleep()
         
 except IOError as e:
     logging.info(e)
