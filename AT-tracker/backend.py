@@ -21,8 +21,8 @@ subscription_key = config.subscription_key
 
 #Query Paramaters
 #stop_name = "3907" #Source from https://at.govt.nz/bus-train-ferry/timetables/find-my-stop-or-station-on-a-map/
-stop_name = "7001"
-route_name = "923" 
+#stop_name = "7001"
+#route_name = "923" 
 
 #Request Headers
 headers = {
@@ -73,6 +73,7 @@ def get_stop_id(stop_name):
         response = conn.getresponse()
         data = response.read()
         data_dict = parse_json(data)
+        print(data_dict)
         stop_id = data_dict["response"][0]["stop_id"]
         conn.close()
         return stop_id
@@ -150,8 +151,9 @@ def get_live_updates(trip_id):
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
-def get_next_bus():
+def get_next_bus(route_name, stop_name):
     #print("Getting Stop ID")
+    print(stop_name)
     stop_id = get_stop_id(stop_name)
 
     #print("Getting Route ID")
@@ -199,7 +201,7 @@ def get_next_bus():
         for item in live_data["response"]["entity"]:
             if item["trip_update"]["trip"]["trip_id"] == current_trip:
                 bus_stop_id = item["trip_update"]["stop_time_update"]["stop_id"]
-                bus_stop_name = get_stop_word_name_long(bus_stop_id)
+                bus_stop_name = get_stop_word_name_long(stop_name)
                 print("Bus is at", bus_stop_name)
                 while True:
                     try:

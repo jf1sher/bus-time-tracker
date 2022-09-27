@@ -14,14 +14,15 @@ from PIL import Image,ImageDraw,ImageFont
 import traceback    
 
 #Backend connection
-sys.path.insert(0, '/home/littlefish/Desktop/bus-time-tracker/AT-tracker')
+sys.path.insert(0, '../AT-tracker')
 import backend
 
 route_name = "923"
+stop_number = "7001"
 
 def update_backend():
-    next_bus_time, actual_bus_time = backend.get_next_bus()
-    bus_stop_name = backend.get_stop_word_name("3907")
+    next_bus_time, actual_bus_time = backend.get_next_bus(route_name, stop_number)
+    bus_stop_name = backend.get_stop_word_name(stop_number)
     return next_bus_time, actual_bus_time,  bus_stop_name
 
 logging.basicConfig(level=logging.DEBUG)
@@ -32,8 +33,11 @@ epd.init()
 epd.Clear()
 time.sleep(1)
 
-font = ImageFont.truetype(os.path.join('Font.ttc'), 24)
-font18 = ImageFont.truetype(os.path.join('Font.ttc'), 18)
+#font = ImageFont.truetype(os.path.join('Font.ttc'), 24)
+#font18 = ImageFont.truetype(os.path.join('Font.ttc'), 18)
+
+font = ImageFont.load_default()
+font18 = ImageFont.load_default()
 
 blackimage = Image.new('1', (epd.width, epd.height), 255)
 redimage = Image.new('1', (epd.width, epd.height), 255)
