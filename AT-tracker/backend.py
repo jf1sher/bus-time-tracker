@@ -73,7 +73,6 @@ def get_stop_id(stop_name):
         response = conn.getresponse()
         data = response.read()
         data_dict = parse_json(data)
-        print(data_dict)
         stop_id = data_dict["response"][0]["stop_id"]
         conn.close()
         return stop_id
@@ -83,6 +82,8 @@ def get_stop_id(stop_name):
 
 def get_route_id(stop_id, route_name):
     try:
+        print("Stop ID is: " + stop_id)
+        print("Route Name is: " + route_name)
         conn = http.client.HTTPSConnection('api.at.govt.nz')
         conn.request("GET", "/v2/gtfs/routes/stopid/"+ stop_id +"?%s" % params, "", headers)
         response = conn.getresponse()
@@ -153,9 +154,9 @@ def get_live_updates(trip_id):
 
 def get_next_bus(route_name, stop_name):
     #print("Getting Stop ID")
-    print(stop_name)
     stop_id = get_stop_id(stop_name)
-
+    print("Stop ID: " + stop_id)
+    print("Route ID: " + route_name)
     #print("Getting Route ID")
     route_id = get_route_id(stop_id, route_name)
 
@@ -228,7 +229,7 @@ def get_next_bus(route_name, stop_name):
 
 if __name__ == "__main__":
     start_time = time.time()
-    next_bus, actual_bus_time = get_next_bus()
+    next_bus, actual_bus_time = get_next_bus("923", "7001")
     if next_bus != "" and actual_bus_time != "":
         print("Scheduled arrival time: ", next_bus)
     print("--- %s seconds ---" % (time.time() - start_time))
