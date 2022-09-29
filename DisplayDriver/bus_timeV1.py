@@ -19,11 +19,12 @@ import backend
 
 route_name = "923"
 stop_number = "3907"
+time_to_stop = 5
 
 def update_backend():
-    next_bus_time, actual_bus_time = backend.get_next_bus(route_name, stop_number)
+    next_bus_time, actual_bus_time, leave_time = backend.get_next_bus(route_name, time_to_stop)
     bus_stop_name = backend.get_stop_word_name(stop_number)
-    return next_bus_time, actual_bus_time,  bus_stop_name
+    return next_bus_time, actual_bus_time,  bus_stop_name, leave_time
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -48,7 +49,7 @@ redimage = Image.new('1', (epd.width, epd.height), 255)
 
 try:
     while True:
-        next_bus_time, actual_bus_time, bus_stop_name = update_backend()
+        next_bus_time, actual_bus_time, bus_stop_name, leave_time = update_backend()
         if next_bus_time == "[]" or next_bus_time == "":
             next_bus_time = "No actives"
         if actual_bus_time == "no data" or actual_bus_time == "" or actual_bus_time == "[]":
@@ -66,6 +67,7 @@ try:
         drawblack.text((8, 50), 'Stop: ' + bus_stop_name, font = font18, fill = 0)
         drawblack.text((8, 100), 'Live arrival: ' + actual_bus_time, font = font18, fill = 0)
         drawblack.text((8, 120), 'Sch arrival: ' + next_bus_time, font = font18, fill = 0)
+        drawblack.text((8, 140), 'Leave at: ' + leave_time, font = font18, fill = 0)
         drawblack.text((8, 160), 'Next Update in 60s', font = font18, fill = 0)
         
 

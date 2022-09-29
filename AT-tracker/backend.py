@@ -12,6 +12,7 @@
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 import json
 import datetime
+from datetime import timedelta
 import time
 from multiprocessing import Pool
 import config #Contains API Key
@@ -23,6 +24,8 @@ subscription_key = config.subscription_key
 #stop_name = "3907" #Source from https://at.govt.nz/bus-train-ferry/timetables/find-my-stop-or-station-on-a-map/
 #stop_name = "7001"
 #route_name = "923" 
+
+
 
 #Request Headers
 headers = {
@@ -82,8 +85,6 @@ def get_stop_id(stop_name):
 
 def get_route_id(stop_id, route_name):
     try:
-        print("Stop ID is: " + stop_id)
-        print("Route Name is: " + route_name)
         conn = http.client.HTTPSConnection('api.at.govt.nz')
         conn.request("GET", "/v2/gtfs/routes/stopid/"+ stop_id +"?%s" % params, "", headers)
         response = conn.getresponse()
@@ -94,6 +95,7 @@ def get_route_id(stop_id, route_name):
             if item["route_short_name"] == route_name:
                 route_id = item["route_id"]
                 conn.close()
+                print("Route ID: " + route_id)
                 return route_id
             else:
                 pass  
@@ -152,11 +154,10 @@ def get_live_updates(trip_id):
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
-def get_next_bus(route_name, stop_name):
+def get_next_bus(route_name, stop_name, minutes_to_stop):
     #print("Getting Stop ID")
     stop_id = get_stop_id(stop_name)
     print("Stop ID: " + stop_id)
-    print("Route ID: " + route_name)
     #print("Getting Route ID")
     route_id = get_route_id(stop_id, route_name)
 
@@ -222,14 +223,21 @@ def get_next_bus(route_name, stop_name):
                 actual_bus_time = actual_bus_time + datetime.timedelta(minutes=bus_delay)
                 actual_bus_time = actual_bus_time.strftime("%I:%M %p")
                 print("Bus is due at", actual_bus_time)
+        if actual_bus_time == "":
+            actual_bus_time = next_bus
     if next_bus == [] or actual_bus_time == "":
         return "", ""
     else:
-        return next_bus, actual_bus_time
+        given_time = datetime.datetime.strptime(actual_bus_time, "%I:%M %p")
+        final_time = given_time - timedelta(minutes=minutes_to_stop)
+        final_time = final_time.strftime("%I:%M %p")
+        
+        return next_bus, actual_bus_time, final_time
 
 if __name__ == "__main__":
     start_time = time.time()
-    next_bus, actual_bus_time = get_next_bus("923", "7001")
+    next_bus, actual_bus_time, final_time = get_next_bus("923", "7001", 5)
     if next_bus != "" and actual_bus_time != "":
         print("Scheduled arrival time: ", next_bus)
+        print("Leave at: ", final_time)
     print("--- %s seconds ---" % (time.time() - start_time))
