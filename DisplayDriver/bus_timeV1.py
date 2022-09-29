@@ -18,7 +18,7 @@ sys.path.insert(0, '../AT-tracker')
 import backend
 
 route_name = "923"
-stop_number = "7001"
+stop_number = "3907"
 
 def update_backend():
     next_bus_time, actual_bus_time = backend.get_next_bus(route_name, stop_number)
@@ -33,11 +33,14 @@ epd.init()
 epd.Clear()
 time.sleep(1)
 
-#font = ImageFont.truetype(os.path.join('Font.ttc'), 24)
-#font18 = ImageFont.truetype(os.path.join('Font.ttc'), 18)
+try:
+    font = ImageFont.truetype(os.path.join('Font.ttc'), 24)
+    font18 = ImageFont.truetype(os.path.join('Font.ttc'), 18)
+except:
+    logging.info("Font.ttc not found, using default font.")
+    font = ImageFont.load_default()
+    font18 = ImageFont.load_default()
 
-font = ImageFont.load_default()
-font18 = ImageFont.load_default()
 
 blackimage = Image.new('1', (epd.width, epd.height), 255)
 redimage = Image.new('1', (epd.width, epd.height), 255)
@@ -46,9 +49,10 @@ redimage = Image.new('1', (epd.width, epd.height), 255)
 try:
     while True:
         next_bus_time, actual_bus_time, bus_stop_name = update_backend()
-        if next_bus_time == "no more buses today" or next_bus_time == "":
-            print("No more buses today")
-            break
+        if next_bus_time == "[]" or next_bus_time == "":
+            next_bus_time = "No actives"
+        if actual_bus_time == "no data" or actual_bus_time == "" or actual_bus_time == "[]":
+            actual_bus_time = "No data"
         blackimage = Image.new('1', (epd.width, epd.height), 255)
         redimage = Image.new('1', (epd.width, epd.height), 255)
         # Drawing on the image
