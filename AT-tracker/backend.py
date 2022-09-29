@@ -226,7 +226,7 @@ def get_next_bus(route_name, stop_name, minutes_to_stop):
         if actual_bus_time == "":
             actual_bus_time = next_bus
     if next_bus == [] or actual_bus_time == "":
-        return "", ""
+        return "", "", ""
     else:
         given_time = datetime.datetime.strptime(actual_bus_time, "%I:%M %p")
         final_time = given_time - timedelta(minutes=minutes_to_stop)

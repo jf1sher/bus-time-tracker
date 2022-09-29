@@ -18,11 +18,11 @@ sys.path.insert(0, '../AT-tracker')
 import backend
 
 route_name = "923"
-stop_number = "3907"
+stop_number = "7001"
 time_to_stop = 5
 
 def update_backend():
-    next_bus_time, actual_bus_time, leave_time = backend.get_next_bus(route_name, time_to_stop)
+    next_bus_time, actual_bus_time, leave_time = backend.get_next_bus(route_name, stop_number, time_to_stop)
     bus_stop_name = backend.get_stop_word_name(stop_number)
     return next_bus_time, actual_bus_time,  bus_stop_name, leave_time
 
