@@ -135,6 +135,7 @@ def get_stop_times(stop_id):
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 def get_live_updates(trip_id):
+    print("Trip ID: ", trip_id)
     params = urllib.parse.urlencode({
     'callback': '',
     'tripid': trip_id,
@@ -188,6 +189,7 @@ def get_next_bus(route_name, stop_name, minutes_to_stop):
             if value == min(next_bus):
                 current_trip = key
                 max_time = datetime.datetime.strptime(value, "%H:%M:%S")
+
     if next_bus == []:
         return "no more buses today", "no more buses today"
     next_bus = min(next_bus)
@@ -223,8 +225,8 @@ def get_next_bus(route_name, stop_name, minutes_to_stop):
                 actual_bus_time = actual_bus_time + datetime.timedelta(minutes=bus_delay)
                 actual_bus_time = actual_bus_time.strftime("%I:%M %p")
                 print("Bus is due at", actual_bus_time)
-        if actual_bus_time == "":
-            actual_bus_time = next_bus
+    if actual_bus_time == "":
+        actual_bus_time = next_bus
     if next_bus == [] or actual_bus_time == "":
         return "", "", ""
     else:
